@@ -7,7 +7,7 @@ const addComment = async (req, res) => {
 
   let data = {
     post_id: id,
-    username: req.body.username,
+    usernama: req.body.usernama,
     text: req.body.text,
   };
 
@@ -16,7 +16,15 @@ const addComment = async (req, res) => {
 };
 
 const getAllComments = async (req, res) => {
-  const comments = await Comment.findAll({});
+  const comments = await Comment.findAll({
+    order: [["created_at", "DESC"]],
+    include: [
+      {
+        model: Post,
+        as: "post",
+      },
+    ],
+  });
   res.status(200).send(comments);
 };
 

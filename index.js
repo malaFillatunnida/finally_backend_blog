@@ -37,7 +37,7 @@ app.listen(PORT, () => {
 
 app.post("/getPostId", async (req, res) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM  posts where id = ? ", [
+    const [rows] = await db.execute("SELECT * FROM  post where id = ? ", [
       req.body.ids,
     ]);
     if (rows.length > 0) {
@@ -51,7 +51,7 @@ app.post("/getPostId", async (req, res) => {
 app.post("/editPost", async (req, res) => {
   try {
     const [update] = await db.execute(
-      "UPDATE `posts` SET `title`=?, `username`=?,`description`=? WHERE id = ?",
+      "UPDATE `post` SET `title`=?, `username`=?,`description`=? WHERE id = ?",
       [req.body.title, req.body.username, req.body.description, req.body.ids]
     );
     if (update.affectedRows === 1) {

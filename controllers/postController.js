@@ -31,10 +31,6 @@ const addPost = async (req, res) => {
 
   const post = await Post.create(info);
   res.status(200).send(post);
-  console.log(post);
-  if (post.affectedRows === 1) {
-    return res.json({ success: true });
-  }
 };
 
 const findAll = async (req, res) => {
@@ -43,7 +39,19 @@ const findAll = async (req, res) => {
 
   const { limit, offset } = getPagination(page, size);
 
-  Post.findAndCountAll({ where: condition, limit, offset })
+  Post.findAndCountAll({
+    order: [["created_at", "DESC"]],
+    include: [
+      {
+        model: Category,
+        as: "category",
+        attributes: ["id", "name"],
+      },
+    ],
+    where: condition,
+    limit,
+    offset,
+  })
     .then((data) => {
       const response = getPagingData(data, page, limit);
       res.send(response);
@@ -58,6 +66,7 @@ const findAll = async (req, res) => {
 
 const getAllPosts = async (req, res) => {
   let post = await Post.findAll({
+    order: [["created_at", "DESC"]],
     include: [
       {
         model: Category,
@@ -80,9 +89,6 @@ const getOnePost = async (req, res) => {
       },
     ],
   });
-  if (post.length > 0) {
-    return res.json({ success: true, listId: post });
-  }
   res.status(200).send(post);
 };
 
@@ -115,6 +121,10 @@ const getPostComment = async (req, res) => {
       {
         model: Comment,
         as: "comment",
+      },
+      {
+        model: Category,
+        as: "category",
       },
     ],
     where: { id: id },
